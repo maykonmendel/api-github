@@ -37,7 +37,25 @@ export const Name = styled.h2`
   font-size: ${(props) => props.theme.fontSizes.subTitle};
   font-weight: normal;
 
-  media screen and (max-width: ${(props) => props.theme.breakpoints.md}) {
+  @media screen and (max-width: ${(props) => props.theme.breakpoints.md}) {
     display: none;
+  }
+`;
+
+export const Inner = styled.div`
+  padding: 1rem;
+
+  @media screen and (max-width: ${(props) => props.theme.breakpoints.md}) {
+    display: none;
+  }
+`;
+
+export const Data = styled.p`
+  display: flex;
+  align-items: center;
+  line-height: 1.5;
+
+  svg {
+    margin-right: 10px;
   }
 `;
