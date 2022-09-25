@@ -1,52 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import Profile from './Profile';
 import Filter from './Filter';
 import Repositories from './Repositories';
-import { Container, Sidebar, Main } from './styles';
-import { getLangsFrom } from '../../services/api';
+import { Loading, Container, Sidebar, Main } from './styles';
+import { getLangsFrom, getUser, getRepos } from '../../services/api';
 
 const RepositoriesPage = () => {
+  const { login } = useParams();
+  const [user, setUser] = useState();
+  const [repositories, setRepositories] = useState();
+  const [languages, setLanguages] = useState();
   const [currentLanguage, setCurrentLanguage] = useState();
+  const [loading, setLoading] = useState(true);
 
-  const user = {
-    login: 'maykonmendel',
-    avatar_url: 'https://avatars.githubusercontent.com/u/10732321?v=4',
-    followers: 12,
-    following: 18,
-    company: null,
-    blog: 'https://maykonmendel.github.io',
-    location: 'Alegre',
-  };
+  useEffect(() => {
+    const loadData = async () => {
+      const [userResponse, repositoriesResponse] = await Promise.all([
+        getUser(login),
+        getRepos(login),
+      ]);
 
-  const repositories = [
-    {
-      id: '1',
-      name: 'Repo 1',
-      description: 'Descrição',
-      html_url: 'https://maykonmendel.github.io',
-      language: 'JavaScript',
-    },
-    {
-      id: '2',
-      name: 'Repo 2',
-      description: 'Descrição',
-      html_url: 'https://maykonmendel.github.io',
-      language: 'C#',
-    },
-    {
-      id: '3',
-      name: 'Repo 3',
-      description: 'Descrição',
-      html_url: 'https://maykonmendel.github.io',
-      language: 'PHP',
-    },
-  ];
+      setUser(userResponse.data);
+      setRepositories(repositoriesResponse.data);
+      setLanguages(getLangsFrom(repositoriesResponse.data));
 
-  const languages = getLangsFrom(repositories);
+      setLoading(false);
+    };
+
+    loadData();
+  }, []);
 
   const onFilterClick = (language) => {
     setCurrentLanguage(language);
   };
+
+  if (loading) {
+    return <Loading>Carregando...</Loading>;
+  }
 
   return (
     <Container>
